@@ -94,3 +94,43 @@ resource "aws_security_group" "web_sg" {
     Environment = local.environment
   }
 }
+
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-*-x86_64"]
+  }
+
+  owners = ["137112412989"] # Amazon
+}
+
+resource "aws_instance" "web" {
+  ami                    = data.aws_ami.amazon_linux.id
+  instance_type          = local.instance_type
+  subnet_id              = aws_subnet.public.id
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
+
+  user_data = templatefile("${path.module}/../app/user-data.sh", {
+    ENVIRONMENT = local.environment
+  })
+
+  tags = {
+    Name        = "${local.project_name}-web"
+    Environment = local.environment
+  }
+}
+
+resource "aws_secretsmanager_secret" "db_password" {
+  name        = "${local.project_name}-db-password"
+  description = "Sample database password"
+}
+
+resource "aws_secretsmanager_secret_version" "db_password_version" {
+  secret_id     = aws_secretsmanager_secret.db_password.id
+  secret_string = jsonencode({
+    username = "lab_user"
+    password = "Password123"
+  })
+}

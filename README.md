@@ -12,3 +12,16 @@ This repository contains Terraform code and a simple web application used to bui
 - `app/`: Simple web server and bootstrap scripts for the EC2 instance.
 
 Configuration is externalized and layered so that environment-specific values (e.g., development vs production) can be changed without modifying the core Terraform code.
+
+Commands to run terraform script once terraform is installed:
+
+# Default Environment:
+
+# cd terraform
+# terraform init
+# terraform apply -var="config_file=../configs/default.json"
+
+# Development Environment
+
+# terraform apply -var="config_file=../configs/development.json"
+
