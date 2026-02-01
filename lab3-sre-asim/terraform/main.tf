@@ -264,3 +264,16 @@ resource "aws_autoscaling_lifecycle_hook" "terminate_hook" {
   default_result         = "CONTINUE"
 }
 
+resource "aws_db_instance" "app_db" {
+  identifier              = "${local.project_name}-db"
+  engine                  = "mysql"
+  instance_class          = "db.t3.micro"
+  allocated_storage       = 20
+  username                = "lab_user"
+  password                = "Password123!"
+  db_name                 = "labdb"
+  multi_az                = true
+  backup_retention_period = 7
+  skip_final_snapshot     = true
+}
+
